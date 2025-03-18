@@ -37,10 +37,10 @@ const Sidebar = () => {
 
     const toPage = useRouter()
     return (
-        <div className={`transition-all duration-200 flex flex-col gap-1 p-1 rounded bg-white ${_currentMenu ? "w-72" : "w-16"} lg:w-72`}>
-            <div className=' p-1 h-full'>
+        <div className={`transition-all duration-200 rounded h-full ${_currentMenu ? "w-72" : "w-12"} lg:w-72`}>
+            <div className='h-full'>
                 {listMenu.map((menu, index) =>
-                    <div key={index} className='h-12 flex flex-col justify-center border-b overflow-hidden cursor-pointer' onClick={() => { toPage.push(menu.link) }}>
+                    <div key={index} className='h-12 flex flex-col justify-center overflow-hidden cursor-pointer' onClick={() => { toPage.push(menu.link) }}>
                         <div className="flex">
                             <div className="">
                                 {menu.icon}

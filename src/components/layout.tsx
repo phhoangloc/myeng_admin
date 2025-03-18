@@ -11,14 +11,15 @@ type Props = {
 const Layout = ({ children }: Props) => {
 
     return (
-        <div className='w-full p-1 gap-1 lg:p-2 lg:gap-2 bg-slate-200 overflow-x-hidden flex flex-col'>
+        <div className='w-full bg-slate-200 overflow-hidden  flex flex-col'>
             <Header />
-            <div className='flex w-max gap-1 lg:gap-4'>
+            <div className='flex w-max min-h-(--vh-12)'>
                 <Sidebar />
-                <div className='w-(--vw-19) min-h-(--vh-12) lg:w-(--vw-80) ' onClick={() => store.dispatch(setMenu(false))}>
+                <div className='w-(--vw-12) lg:w-(--vw-72) pr-1' onClick={() => store.dispatch(setMenu(false))}>
                     {children}
                 </div>
             </div>
+
         </div>
     )
 }

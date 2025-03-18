@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-    --breakpoint-xs: 375px;
-    --breakpoint-sm: 575px;
-    --breakpoint-md: 768px;
-    --breakpoint-lg: 992px;
-    --breakpoint-xl: 1200px;
-    --breakpoint-xxl: 1600px;
+    --container-xs: 375px;
+    --container-sm: 575px;
+    --container-md: 768px;
+    --container-lg: 992px;
+    --container-xl: 1200px;
+    --container-2xl: 1600px;
 
-    --vh-12: calc(100vh - 4rem);
-    --vw-18: calc(100vw - 4.5rem);
-    --vw-19: calc(100vw - 4.75rem);
-    --vw-80: calc(100vw - 20rem)
+    --vw-12: calc(100vw - 3rem);
+    --vw-72: calc(100vw - 18rem);
+
+    --vh-12: calc(100vh - 3rem)
 }

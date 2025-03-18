@@ -16,8 +16,8 @@ const Header = () => {
         <div className=' h-12  rounded grid grid-cols-12'>
             <div className='col-span-2 flex flex-col justify-center'>
                 {_currrentMenu ?
-                    <MenuOpenIcon className='ml-2 lg:!hidden' onClick={() => store.dispatch(setMenu(false))} />
-                    : <MenuIcon className='ml-2 lg:!hidden' onClick={() => store.dispatch(setMenu(true))} />}
+                    <MenuOpenIcon className='lg:!hidden !w-12 !h-12 p-2' onClick={() => store.dispatch(setMenu(false))} />
+                    : <MenuIcon className='lg:!hidden !w-12 !h-12 p-2' onClick={() => store.dispatch(setMenu(true))} />}
             </div>
             <p className='h-full flex flex-col justify-center text-center col-span-8 w-full'>Admin</p>
             <div className='col-span-2'></div>
