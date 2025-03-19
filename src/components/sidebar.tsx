@@ -3,7 +3,6 @@ import store from '@/redux/store'
 import React, { useState, useEffect } from 'react'
 
 import { useRouter } from 'next/navigation';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import HomeIcon from '@mui/icons-material/Home';
 import AbcIcon from '@mui/icons-material/Abc';
 const Sidebar = () => {
@@ -24,14 +23,14 @@ const Sidebar = () => {
             link: "/",
         },
         {
-            icon: <DashboardIcon className='!w-12 !h-12 p-2' />,
-            name: "Dashboard",
-            link: "/dashboard",
-        },
-        {
             icon: <AbcIcon className='!w-12 !h-12 p-2' />,
             name: "Word",
             link: "/word",
+        },
+        {
+            icon: <AbcIcon className='!w-12 !h-12 p-2' />,
+            name: "Path 5",
+            link: "/pathfive",
         },
     ]
 
