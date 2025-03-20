@@ -232,11 +232,11 @@ type TextAreaProps = {
 
 export const TextArea = ({ onChange, name, value, disabled, sx, onFocus }: TextAreaProps) => {
 
-    const [editorState, setEditorState] = useState(() => EditorState.createEmpty(decorator));
+    const [editorState, setEditorState] = useState(EditorState.createEmpty(decorator));
     const [content, setContent] = useState<string>("");
-
     const inputRef = useRef<any>("")
     const [_focus, set_focus] = useState<boolean>(false)
+
     useEffect(() => {
         const valueState = stateFromHTML(value)
         setEditorState(EditorState.createWithContent(valueState, decorator))
@@ -252,14 +252,11 @@ export const TextArea = ({ onChange, name, value, disabled, sx, onFocus }: TextA
 
     return (
         <div className={` text-left relative mb-2 ${disabled ? "opacity-50" : ""} ${sx ? sx : ""}`}>
-            <p className={` absolute transition-all duration-300 h-max px-2 opacity-75  ${_focus || content !== "<p><br></p>" ? "top-0 text-sm text-lv-13 opacity-50" : "top-4"}`}
-            >{name}</p>
-
-            <div className={`relative z-[1] overflow-auto scroll_none pt-5 min-h-11 px-2`} onClick={() => { inputRef.current.focus(), set_focus(true) }}>
+            <p className={` absolute transition-all duration-300 h-max px-2 opacity-75  ${_focus || content !== "<p><br></p>" ? "top-0 text-sm text-lv-13 opacity-50" : "top-4"}`}>{name}</p>
+            <div className={`relative z-[1] overflow-auto scroll_none pt-5 min-h-11 px-2`} onClick={() => { inputRef.current.focus(); set_focus(true) }}>
                 <Editor ref={inputRef} editorState={editorState} onChange={(editorState) => setEditorState(editorState)} onBlur={() => set_focus(false)} onFocus={() => onFocus && onFocus()} />
             </div>
-            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 border-lv-2 dark:border-lv-17`}
-            ></div>
+            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 border-lv-2 dark:border-lv-17`}></div>
             <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 transition-all duration-300 border-lv-11 ${_focus || content !== "<p><br></p>" ? "scale-x-[100%]" : "scale-x-[0%]"}`} ></div>
         </div>
     )
