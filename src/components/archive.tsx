@@ -45,7 +45,7 @@ export const ArchiveWord = ({ archive }: Props) => {
 
     return (
         <div className='flex flex-col gap-1'>
-            <div className="h-11  bg-white px-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/_new")}>
+            <div className="h-11  bg-white px-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/-1")}>
                 <div className="flex">
                     <AddIcon className='!w-11 !h-11 p-2' />
                     <div className='flex flex-col justify-center'>new {archive}</div>
@@ -69,7 +69,8 @@ export const Archive = ({ archive }: Props) => {
 
     const [_items, set_items] = useState<QuestionType[]>([])
     const getItem = async (archive: string) => {
-        const result = await ApiItemUser({ position: "user", archive: archive })
+        const result = await ApiItemUser({ position: "user", archive: "path", archivePlus: archive })
+        console.log(result)
         if (result.success) {
             set_items(result.data)
         } else {
@@ -84,7 +85,7 @@ export const Archive = ({ archive }: Props) => {
 
     return (
         <div className='flex flex-col gap-1'>
-            <div className="h-11  bg-white px-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/_new")}>
+            <div className="h-11  bg-white px-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/-1")}>
                 <div className="flex">
                     <AddIcon className='!w-11 !h-11 p-2' />
                     <div className='flex flex-col justify-center'>new question of {archive}</div>
@@ -92,7 +93,7 @@ export const Archive = ({ archive }: Props) => {
             </div>
             {_items.length ?
                 _items.map((_item, index) =>
-                    <div key={index} className="  bg-white px-2 pb-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
+                    <div key={index} className="  bg-white px-2  shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
                         <div className="flex">
                             <CreateIcon className='!w-11 !h-11 p-2' />
                             <div className='flex flex-col justify-center' dangerouslySetInnerHTML={{ __html: _item.question }}></div>

@@ -28,9 +28,19 @@ const Sidebar = () => {
             link: "/word",
         },
         {
-            icon: <AbcIcon className='!w-12 !h-12 p-2' />,
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>5</div>,
             name: "Path 5",
             link: "/pathfive",
+        },
+        {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>6</div>,
+            name: "Path 6",
+            link: "/pathsix",
+        },
+        {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>7</div>,
+            name: "Path 7",
+            link: "/pathseven",
         },
     ]
 
