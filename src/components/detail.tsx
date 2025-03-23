@@ -8,6 +8,7 @@ import { Button } from '@/tool/button/button'
 import { TextArea } from '@/tool/input/textarea'
 import { DividerSelect } from "../tool/divider/divider"
 import { Add } from '@mui/icons-material'
+import CheckIcon from '@mui/icons-material/Check';
 
 type Props = {
     archive: string,
@@ -104,7 +105,7 @@ export const Detail = ({ archive, slug }: Props) => {
     const [_question, set_question] = useState<string>("")
     const [__question, set__question] = useState<string>("")
     const [_choose, set_choose] = useState<string>("")
-    const [_answer, set_answer] = useState<string | number>("")
+    const [_answer, set_answer] = useState<string>("")
     const [_questionTran, set_questionTran] = useState<string>("")
     const [__questionTran, set__questionTran] = useState<string>("")
     const [_answerTran, set_answerTran] = useState<string>("")
@@ -113,21 +114,24 @@ export const Detail = ({ archive, slug }: Props) => {
     const [__explain, set__explain] = useState<string>("")
 
     const [_chooseArr, set_chooseArr] = useState<{
-        id: number,
-        name: string,
-        choose?: {
+        id: number;
+        name: string;
+        question: string;
+        answers: {
             answerA: string;
             answerB: string;
             answerC: string;
             answerD: string;
         }
-
+        anwser: string
     }[]>([])
     const [_chooseIndex, set_chooseIndex] = useState<number>(0)
+    const [_chooseQuestion, set_chooseQuestion] = useState<string>("")
     const [_answerA, set_answerA] = useState<string>("")
     const [_answerB, set_answerB] = useState<string>("")
     const [_answerC, set_answerC] = useState<string>("")
     const [_answerD, set_answerD] = useState<string>("")
+    const [_chooseAnswer, set_chooseAnswer] = useState<string>("")
 
     useEffect(() => {
 
@@ -194,10 +198,62 @@ export const Detail = ({ archive, slug }: Props) => {
         }
     }
 
-    const createChoose = () => {
-        { set_chooseArr(arr => [...arr, { id: (arr.length + 1), name: "question " + (arr.length + 1) }]); set_chooseIndex(_chooseArr.length + 1) }
+    const makeQuestion = (index: number) => {
+        set_chooseArr((arr) => [...arr, {
+            id: (index),
+            name: "question " + index,
+            question: "",
+            answers: {
+                answerA: "",
+                answerB: "",
+                answerC: "",
+                answerD: "",
+            },
+            anwser: ""
+        }])
+        set_chooseIndex(index - 1)
     }
+
+    const saveChoose = () => {
+        const _answerObj = {
+            id: _chooseIndex,
+            name: "question " + (_chooseIndex),
+            question: _chooseQuestion,
+            answers: {
+                answerA: _answerA,
+                answerB: _answerB,
+                answerC: _answerC,
+                answerD: _answerD,
+            },
+            anwser: _chooseAnswer
+        }
+        const newArr = _chooseArr
+        newArr[_chooseIndex - 1] = _answerObj
+        set_chooseArr(newArr)
+    }
+
+
+    useEffect(() => {
+        if (_chooseIndex - 1) {
+            set_chooseQuestion("")
+            set_chooseAnswer("")
+            set_answerA("")
+            set_answerB("")
+            set_answerC("")
+            set_answerD("")
+        } else {
+            set_chooseQuestion(_chooseArr[_chooseIndex - 1].question)
+            set_chooseAnswer(_chooseArr[_chooseIndex - 1].anwser)
+            set_answerA(_chooseArr[_chooseIndex - 1].answers.answerA)
+            set_answerB(_chooseArr[_chooseIndex - 1].answers.answerB)
+            set_answerC(_chooseArr[_chooseIndex - 1].answers.answerC)
+            set_answerD(_chooseArr[_chooseIndex - 1].answers.answerD)
+        }
+    }, [_chooseArr, _chooseIndex])
+
     console.log(_chooseArr)
+
+
     return (
         _loading ?
             < div className="h-11  bg-white px-2 shadow-md rounded flex flex-col justify-center gap-1 text-center " >
@@ -206,18 +262,21 @@ export const Detail = ({ archive, slug }: Props) => {
             < div className="min-h-full  bg-white px-2 shadow-md rounded  flex flex-col gap-1 " >
                 <div className="h-11"></div>
                 <TextArea onChange={(v) => set__question(v)} value={_question} name="question" />
-                <div className='flex'>
-                    <DividerSelect data={_chooseArr} name={_answer || "answers"} valueReturn={(v) => set_chooseIndex(Number(v))} /> <Add className='!w-12 !h-12 p-3' onClick={() => createChoose()} />
+                <div className="flex px-2">
+                    <DividerSelect data={_chooseArr} name={_chooseArr[_chooseIndex]?.name || "question"} valueReturn={(v) => { set_chooseIndex(Number(v)) }} />
+                    <Add className='!h-12 !w-12 p-3' onClick={() => { makeQuestion(_chooseArr.length + 1) }} />
                 </div>
-                {_chooseIndex ?
-                    <>
-                        <Input name={"Answer A"} onChange={(v) => set_answerA(v)} value={_answerA} key={_chooseIndex + "a"} />
-                        <Input name={"Answer B"} onChange={(v) => set_answerB(v)} value={_answerB} key={_chooseIndex + "b"} />
-                        <Input name={"Answer C"} onChange={(v) => set_answerC(v)} value={_answerC} key={_chooseIndex + "c"} />
-                        <Input name={"Answer D"} onChange={(v) => set_answerD(v)} value={_answerD} key={_chooseIndex + "d"} />
-                    </> : null
+                {
+                    _chooseIndex ?
+                        <div>
+                            <Input name={"Question " + (_chooseArr.length)} onChange={(v) => { set_chooseQuestion(v) }} value={_chooseQuestion} />
+                            <Input name={"Answer A"} onChange={(v) => set_answerA(v)} value={_answerA} />
+                            <Input name={"Answer B"} onChange={(v) => set_answerB(v)} value={_answerB} />
+                            <Input name={"Answer C"} onChange={(v) => set_answerC(v)} value={_answerC} />
+                            <Input name={"Answer D"} onChange={(v) => set_answerD(v)} value={_answerD} />
+                            <DividerSelect data={[{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" },]} name={_chooseAnswer || "answer correct"} valueReturn={(v) => { set_chooseAnswer(v ? v.toString() : _answer) }} />
+                        </div> : null
                 }
-                <DividerSelect data={[{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" },]} name={_answer || "answer correct"} valueReturn={(v) => set_answer(v ? v : _answer)} />
                 <TextArea onChange={(v) => set__questionTran(v)} value={_questionTran} name="question translate" />
                 <TextArea onChange={(v) => set__answerTran(v)} value={_answerTran} name="answer translate" />
                 <TextArea onChange={(v) => set__explain(v)} value={_explain} name="explain" />
