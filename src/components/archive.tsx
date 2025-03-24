@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import { useRouter } from 'next/navigation';
 import LabelIcon from '@mui/icons-material/Label';
+import { useSearchParams } from 'next/navigation';
 type Props = {
     archive: string
 }
@@ -30,9 +31,13 @@ export type QuestionType = {
 }
 export const ArchiveWord = ({ archive }: Props) => {
 
+    const useSearch = useSearchParams()
+    const page = useSearch.get("page")
+
     const [_items, set_items] = useState<ItemType[]>([])
-    const getItem = async (archive: string) => {
-        const result = await ApiItemUser({ position: "user", archive: archive })
+    const _limit = 10
+    const getItem = async (archive: string, page: number, limit: number) => {
+        const result = await ApiItemUser({ position: "user", archive: archive, skip: page * limit, limit: limit })
         if (result.success) {
             set_items(result.data)
         } else {
@@ -40,8 +45,8 @@ export const ArchiveWord = ({ archive }: Props) => {
         }
     }
     useEffect(() => {
-        getItem(archive)
-    }, [archive])
+        getItem(archive, page ? Number(page) - 1 : 0, _limit)
+    }, [_limit, page, archive])
     const toPage = useRouter()
 
     return (
