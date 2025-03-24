@@ -3,7 +3,7 @@ import { ApiItemUser } from '@/api/user'
 import React, { useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import { useRouter } from 'next/navigation';
-import CreateIcon from '@mui/icons-material/Create';
+import LabelIcon from '@mui/icons-material/Label';
 type Props = {
     archive: string
 }
@@ -13,7 +13,8 @@ export type ItemType = {
     archive: string,
     name: string,
     mean: string,
-    useto: string,
+    example?: string,
+    book?: string,
     createdAt: Date
 }
 export type QuestionType = {
@@ -55,10 +56,10 @@ export const ArchiveWord = ({ archive }: Props) => {
                 _items.map((_item, index) =>
                     <div key={index} className="  bg-white px-2 pb-2 shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
                         <div className="flex">
-                            <CreateIcon className='!w-11 !h-11 p-2' />
+                            <div className='!w-11 !h-11 p-2 font-bold text-xl' >W</div>
                             <div className='flex flex-col justify-center'>{_item.name}</div>
                         </div>
-                        <p className='px-2'>{_item.useto.split(_item.name)[0]} <b style={{ textDecoration: "underline" }}>{_item.name}</b> {_item.useto.split(_item.name)[1]}</p>
+                        {_item.book ? <p className='py-2'>{_item.book}</p> : null}
                     </div>) : null}
         </div>
     )
@@ -95,8 +96,8 @@ export const Archive = ({ archive }: Props) => {
                 _items.map((_item, index) =>
                     <div key={index} className="  bg-white px-2  shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
                         <div className="flex">
-                            <CreateIcon className='!w-11 !h-11 p-2' />
-                            <div className='flex flex-col justify-center' dangerouslySetInnerHTML={{ __html: _item.question }}></div>
+                            <LabelIcon className='!w-11 !h-11 p-2' />
+                            <div className='flex flex-col justify-center py-2' dangerouslySetInnerHTML={{ __html: _item.question }}></div>
                         </div>
                     </div>) : null}
         </div>

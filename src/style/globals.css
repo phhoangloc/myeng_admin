@@ -13,3 +13,7 @@
 
     --vh-12: calc(100vh - 3rem)
 }
+
+.scrbar-none::-webkit-scrollbar {
+    display: none;
+}

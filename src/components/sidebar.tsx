@@ -28,6 +28,26 @@ const Sidebar = () => {
             link: "/word",
         },
         {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>1</div>,
+            name: "Path 1",
+            link: "/pathone",
+        },
+        {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>2</div>,
+            name: "Path 2",
+            link: "/pathtwo",
+        },
+        {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>3</div>,
+            name: "Path 3",
+            link: "/paththree",
+        },
+        {
+            icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>4</div>,
+            name: "Path 4",
+            link: "/pathfour",
+        },
+        {
             icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>5</div>,
             name: "Path 5",
             link: "/pathfive",

@@ -15,7 +15,7 @@ const Layout = ({ children }: Props) => {
             <Header />
             <div className='flex w-max min-h-(--vh-12)'>
                 <Sidebar />
-                <div className='w-(--vw-12) lg:w-(--vw-72) pr-1' onClick={() => store.dispatch(setMenu(false))}>
+                <div className='w-(--vw-12) lg:w-(--vw-72) px-2' onClick={() => store.dispatch(setMenu(false))}>
                     {children}
                 </div>
             </div>

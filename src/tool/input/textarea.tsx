@@ -173,8 +173,8 @@ export const TextAreaTool = (props: Props) => {
 
 
     return (
-        <div className={`relative border border-lv-2 dark:border-lv-17 px-2 ${props.sx ? props.sx : ""}`}>
-            <div className='sticky p-1  top-0 border-b border-inherit bg-lv-0 dark:bg-lv-18'>
+        <div className={`relative border border-lv-2 dark:border-lv-17 px-2 ${props.sx ? props.sx : ""} overflow-auto`}>
+            <div className='sticky p-1  top-0 border-b border-inherit bg-white'>
                 <div className='relative'>
                     <div className='flex flex-wrap relative'>
                         <DividerSelect name={title} sx='w-24 z-[2]'
