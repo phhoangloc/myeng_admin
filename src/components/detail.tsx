@@ -130,7 +130,7 @@ export const Detail = ({ archive, slug }: Props) => {
         answerB: string;
         answerC: string;
         answerD: string;
-        anwser: string
+        answer: string
     }[]>([])
     const [_chooseIndex, set_chooseIndex] = useState<number>(0)
     const [_chooseQuestion, set_chooseQuestion] = useState<string>("")
@@ -197,7 +197,7 @@ export const Detail = ({ archive, slug }: Props) => {
             answerB: "",
             answerC: "",
             answerD: "",
-            anwser: ""
+            answer: ""
         }])
         set_chooseIndex(index - 1)
     }
@@ -208,7 +208,7 @@ export const Detail = ({ archive, slug }: Props) => {
         console.log(newArr)
         set_chooseIndex(0)
     }
-    const inputItem = (t: "id" | "question" | "answerA" | "answerB" | "answerC" | "answerD" | "name" | "anwser", v: string, index: number) => {
+    const inputItem = (t: "id" | "question" | "answerA" | "answerB" | "answerC" | "answerD" | "name" | "answer", v: string, index: number) => {
         const newArr = _chooseArr
         const object: Record<string, string | number> = newArr[index - 1]
         const prop: keyof typeof object = t;
@@ -221,7 +221,7 @@ export const Detail = ({ archive, slug }: Props) => {
         set_choose(JSON.stringify(_chooseArr))
     }, [_chooseAnswer, _answerA, _answerB, _answerC, _answerD, _chooseQuestion, _chooseArr])
 
-    console.log(_chooseIndex)
+    console.log(_chooseArr)
 
     return (
         _loading ?
@@ -245,8 +245,9 @@ export const Detail = ({ archive, slug }: Props) => {
                             <Input name={"Answer B"} onChange={(v) => { inputItem("answerB", v, _chooseIndex); set_answerB(v) }} value={_chooseArr[_chooseIndex - 1].answerB} key={"ab" + _chooseIndex} />
                             <Input name={"Answer C"} onChange={(v) => { inputItem("answerC", v, _chooseIndex); set_answerC(v) }} value={_chooseArr[_chooseIndex - 1].answerC} key={"ac" + _chooseIndex} />
                             <Input name={"Answer D"} onChange={(v) => { inputItem("answerD", v, _chooseIndex); set_answerD(v) }} value={_chooseArr[_chooseIndex - 1].answerD} key={"ad" + _chooseIndex} />
-                            <DividerSelect data={[{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" },]} name={_chooseArr[_chooseIndex - 1].anwser || "answer correct"} valueReturn={(v) => { inputItem("anwser", v ? v.toString() : _chooseArr[_chooseIndex - 1].anwser, _chooseIndex); set_chooseAnswer(v ? v.toString() : _chooseArr[_chooseIndex - 1].anwser) }} key={"a" + _chooseIndex} />
-                        </div> : null
+                            <DividerSelect data={[{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" },]} name={_chooseArr[_chooseIndex - 1].answer || "answer correct"} valueReturn={(v) => { inputItem("answer", v ? v.toString() : _chooseArr[_chooseIndex - 1].answer, _chooseIndex); set_chooseAnswer(v ? v.toString() : _chooseArr[_chooseIndex - 1].answer) }} key={"a" + _chooseIndex} />
+                        </div> :
+                        null
                 }
                 <div className="h-11 flex flex-col justify-end font-bold">Explain</div>
 
