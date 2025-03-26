@@ -103,10 +103,10 @@ export const Archive = ({ archive }: Props) => {
             </div>
             {_items.length ?
                 _items.map((_item, index) =>
-                    <div key={index} className="  bg-white px-2  shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
+                    <div key={index} className="  bg-white p-2  shadow-md rounded cursor-pointer" onClick={() => toPage.push("/" + archive + "/" + _item.id)}>
                         <div className="flex">
                             <LabelIcon className='!w-11 !h-11 p-2' />
-                            <div className='flex flex-col justify-center py-2' dangerouslySetInnerHTML={{ __html: _item.question }}></div>
+                            <div className={` h-18 py-0 line-clamp-4 `} dangerouslySetInnerHTML={{ __html: _item.question }}></div>
                         </div>
                     </div>) : null}
             <Pagination page={Number(page) - 1} next={() => toPage.push("/" + archive + "?page=" + (Number(page) + 1))} prev={() => toPage.push("/" + archive + "?page=" + (Number(page) - 1))} end={_items.length < _limit} ></Pagination>
