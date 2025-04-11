@@ -1,16 +1,21 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { ItemType } from './archive'
+import { BlogType, ItemType } from './archive'
 import { ApiItemUser, ApiUpdateItem, ApiCreateItem, ApiDeleteItem } from '@/api/user'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Input } from '@/tool/input/input'
 import { Button } from '@/tool/button/button'
 import { TextArea, TextAreaTool } from '@/tool/input/textarea'
 import { DividerSelect } from "../tool/divider/divider"
 import { Add } from '@mui/icons-material'
 import RemoveIcon from '@mui/icons-material/Remove';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { UserType } from '@/redux/reducer/UserReduce'
+import store from '@/redux/store'
+import { ApiItem } from '@/api/client'
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import moment from 'moment'
 
 type Props = {
     archive: string,
@@ -114,7 +119,115 @@ export const DetailWord = ({ archive, slug }: Props) => {
 
     )
 }
+export const DetailBlog = () => {
+    const [_currentUser, set_currentUser] = useState<UserType>(store.getState().user)
+    const update = () => {
+        store.subscribe(() => set_currentUser(store.getState().user))
+    }
+    useEffect(() => {
+        update()
+    }, [])
+    const params = useParams<{ archive: string, slug: string }>()
+    const archive = params.archive
+    const slug = params.slug
+
+    const [_blog, set_blog] = useState<BlogType | undefined>()
+    const [_refresh, set_refresh] = useState<number>(0)
+    const getOneBlog = async (archive: string, slug: string) => {
+        const result = await ApiItem({ archive, slug })
+        if (result.success) {
+            set_blog(result.data[0])
+        }
+    }
+
+    useEffect(() => {
+        getOneBlog(archive, slug)
+    }, [archive, slug, _refresh])
+
+
+    // const [_isEdit, set_isEdit] = useState<boolean>(false)
+    const [_content, set_content] = useState<string>("")
+
+    const toPage = useRouter()
+    const createBlog = async (position: string, archive: string, body: { content: string, slug: string }) => {
+        const result = await ApiCreateItem({ position, archive }, body)
+        if (result.success) {
+            set_refresh(n => n + 1)
+        }
+    }
+    const updateBlog = async (position: string, archive: string, body: { content: string }, id: number) => {
+        const result = await ApiUpdateItem({ position, archive, id }, body)
+        if (result.success) {
+            set_refresh(n => n + 1)
+        }
+    }
+    const deleteBlog = async (position: string, archive: string, id: number) => {
+        const result = await ApiDeleteItem({ position, archive, id },)
+        if (result.success) {
+            toPage.push("/blog")
+        }
+    }
+    return (
+        _blog ?
+            <div className='flex flex-col gap-1'>
+
+                <div className='bg-white shadow rounded'>
+                    <div className='h-12 flex justify-between  border-b border-slate-200 font-bold px-2'>
+                        <div className='flex flex-col justify-center'>
+                            {_blog?.host.username}
+                        </div>
+                        <div className='flex'>
+                            {_currentUser.id === _blog?.hostId || _currentUser.position === "admin" ?
+                                <SaveIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => updateBlog(_currentUser.position, _blog.archive, { content: _content }, _blog.id)} /> :
+                                null}
+                            <DeleteIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => deleteBlog(_currentUser.position, _blog.archive, _blog.id)} />
+                        </div>
+                    </div>
+                    <TextAreaTool onChange={(v) => set_content(v)} value={_blog ? _blog.content : ""} sx='min-h-96 border-none' />
+                    <div className="h-12"></div>
+                </div>
+                <div className='bg-white shadow rounded px-2 '>
+                    <div className='h-12 flex flex-col justify-center'>
+                        comment
+                    </div>
+                </div>
+            </div> :
+            slug === "news" ?
+                <div className='flex flex-col gap-1'>
+                    <div className='bg-white shadow rounded'>
+                        <div className='h-12 flex justify-between  border-b border-slate-200 font-bold px-2'>
+                            <div className='flex flex-col justify-center'>
+                                {_currentUser.username}
+                            </div>
+                            <div className='flex'>
+                                {_currentUser.position === "admin" ?
+                                    <SaveIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => createBlog(_currentUser.position, archive, { content: _content, slug: moment(Date()).format("YYYYMMDDhhmmss") })} /> :
+                                    null}
+                                <DeleteIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => toPage.push("/blog")} />
+                            </div>
+                        </div>
+                        <TextAreaTool onChange={(v) => set_content(v)} value={""} sx='min-h-96 border-none' />
+                        <div className="h-12"></div>
+                    </div>
+                    <div className='bg-white shadow rounded px-2 '>
+                        <div className='h-12 flex flex-col justify-center'>
+                            comment
+                        </div>
+                    </div>
+                </div> :
+                null
+    )
+}
 export const Detail = ({ archive, slug }: Props) => {
+
+    const [_currentUser, set_currentUser] = useState<UserType>(store.getState().user)
+    const update = () => {
+        store.subscribe(() => set_currentUser(store.getState().user))
+    }
+    useEffect(() => {
+        update()
+    }, [])
+
     const [_loading, set_loading] = useState<boolean>(true)
     const [_id, set_id] = useState<number>(0)
     const [_question, set_question] = useState<string>("")
@@ -145,9 +258,10 @@ export const Detail = ({ archive, slug }: Props) => {
         set_choose(JSON.stringify(_chooseArr))
     }, [_chooseArr])
 
-    const getItem = async (archive: string, id: string) => {
+    const getItem = async (position: string, archive: string, id: string) => {
         set_loading(true)
-        const result = await ApiItemUser({ position: "user", archive: "path", archivePlus: archive, id: Number(id) })
+        const result = await ApiItemUser({ position, archive: "path", archivePlus: archive, id: Number(id) })
+
         if (result.success && result.data[0]) {
             set_loading(false)
             set_id(result.data[0].id)
@@ -161,9 +275,9 @@ export const Detail = ({ archive, slug }: Props) => {
 
     useEffect(() => {
         if (archive) {
-            getItem(archive, slug)
+            getItem(_currentUser.position, archive, slug)
         }
-    }, [archive, slug])
+    }, [archive, slug, _currentUser.position])
 
     const toPage = useRouter()
 
@@ -174,14 +288,14 @@ export const Detail = ({ archive, slug }: Props) => {
         explain: __explain
     }
 
-    const upload = async (body: questionTypeBody, archive: string, id: number) => {
-        const result = await ApiUpdateItem({ position: "user", archive, id }, body)
+    const upload = async (position: string, archive: string, id: number, body: questionTypeBody,) => {
+        const result = await ApiUpdateItem({ position, archive, id }, body)
         if (result.success) {
             toPage.push("/" + body.archive)
         }
     }
-    const create = async (body: questionTypeBody, archive: string) => {
-        const result = await ApiCreateItem({ position: "user", archive }, body)
+    const create = async (position: string, archive: string, body: questionTypeBody,) => {
+        const result = await ApiCreateItem({ position, archive }, body)
         if (result.success) {
             toPage.push("/" + body.archive)
         }
@@ -213,6 +327,7 @@ export const Detail = ({ archive, slug }: Props) => {
         const newArr = _chooseArr
         const newArrFilter = newArr.filter((a, i) => i !== index)
         set_chooseArr(newArrFilter)
+        set_chooseIndex(-1)
     }
 
     useEffect(() => {
@@ -224,9 +339,6 @@ export const Detail = ({ archive, slug }: Props) => {
             set_chooseIndex(_chooseArr.length - 1)
         }
     }, [_chooseArr.length])
-
-    // console.log(_chooseArr)
-    // console.log(_chooseIndex)
     return (
         _loading ?
             < div className="h-11  bg-white px-2 shadow-md rounded flex flex-col justify-center gap-1 text-center " >
@@ -264,7 +376,7 @@ export const Detail = ({ archive, slug }: Props) => {
 
                     <TextAreaTool onChange={(v) => set__explain(v)} value={_explain} sx='h-96' />
 
-                    <Button name={_id && _id !== -1 ? "save" : "create"} sx='bg-slate-200 !text-black' onClick={() => _id && _id !== -1 ? upload(body, "path", _id) : create(body, "path")}></Button>
+                    <Button name={_id && _id !== -1 ? "save" : "create"} sx='bg-slate-200 !text-black' onClick={() => _id && _id !== -1 ? upload(_currentUser.position, "path", _id, body) : create(_currentUser.position, "path", body)}></Button>
                 </div >
             </div >
 

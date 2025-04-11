@@ -2,7 +2,7 @@
 import React from 'react'
 import { useParams } from 'next/navigation'
 
-import { Detail, DetailWord } from '@/components/detail'
+import { Detail, DetailWord, DetailBlog } from '@/components/detail'
 
 
 const Page = () => {
@@ -13,7 +13,10 @@ const Page = () => {
     switch (archive) {
         case "word":
             return <DetailWord archive={archive} slug={slug} />
-        default: return <Detail archive={archive} slug={slug} />
+        case "blog":
+            return <DetailBlog />
+        default:
+            return <Detail archive={archive} slug={slug} />
     }
 }
 
