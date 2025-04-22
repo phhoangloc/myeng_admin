@@ -14,7 +14,12 @@ import AddLinkIcon from '@mui/icons-material/AddLink';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { DividerSelect } from '../divider/divider';
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { useRef } from 'react';
+import store from '@/redux/store';
+import { ModalType, setModal } from '@/redux/reducer/ModalReduce';
+import { UserType } from '@/redux/reducer/UserReduce';
+import { ApiItemUser } from '@/api/user';
 type Props = {
     onChange: (e: string) => void,
     value: string,
@@ -170,11 +175,50 @@ export const TextAreaTool = (props: Props) => {
     useEffect(() => {
         imgArr[0]?.src && createImage(imgArr[0].src)
     }, [imgArr])
+    const [_isSelectFromTextArea, set_isSelectFromTextArea] = useState<boolean>(false)
+    const [_audioId, set_AudioId] = useState<number>(0)
+    const [_audioPreview, set_AudioPreview] = useState<string>("")
+
+    const [_currentUser, set_currentUser] = useState<UserType>(store.getState().user)
+    const [_currentModal, set_currentModal] = useState<ModalType>(store.getState().modal)
+    const update = () => {
+        store.subscribe(() => set_currentUser(store.getState().user))
+        store.subscribe(() => set_currentModal(store.getState().modal))
+    }
+    useEffect(() => {
+        update()
+    }, [])
+
+    useEffect(() => {
+        if (_isSelectFromTextArea && _currentModal.open === false && _currentModal.value) {
+            set_AudioId(_currentModal.value)
+            store.dispatch(setModal({ open: false, value: 0 }))
+            set_isSelectFromTextArea(false)
+        }
+    }, [_currentModal.open, _currentModal.value])
 
 
+    useEffect(() => {
+        const getAudioFile = async (id: number) => {
+            const result = await ApiItemUser({ position: _currentUser.position, archive: "file", id })
+            if (result.success) {
+                set_AudioPreview(result.data[0].name)
+                // onCheck(process.env.ftp+result.data[0].name)
+            }
+        }
+        if (_audioId) {
+            getAudioFile(_audioId)
+        }
+    }, [_audioId, _currentUser.position])
+
+    useEffect(() => {
+        if (_audioPreview) {
+            createImage(process.env.ftp_url + _audioPreview)
+        }
+    }, [_audioPreview])
     return (
-        <div className={`relative border border-lv-2 dark:border-lv-17 px-2 ${props.sx ? props.sx : ""} overflow-auto`}>
-            <div className='sticky p-1  top-0 border-b border-inherit bg-white'>
+        <div className={`relative px-2 ${props.sx ? props.sx : ""}`}>
+            <div className='sticky p-1  top-0 border-b border-slate-200 bg-white'>
                 <div className='relative'>
                     <div className='flex flex-wrap relative'>
                         <DividerSelect name={title} sx='w-24 z-[2]'
@@ -185,8 +229,7 @@ export const TextAreaTool = (props: Props) => {
                                 { name: "h4", func: () => createBlockStyle(editorState, "header-four") },
                                 { name: "h5", func: () => createBlockStyle(editorState, "header-five") },
                                 { name: "p", func: () => createBlockStyle(editorState, "paragraph") }
-                            ]
-                            } />
+                            ]} />
                         <FormatListBulletedIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  ${blockType === "unordered-list-item" ? props.colorhover ? props.colorhover : "bg-lv-11 text-white" : ""}`} onClick={() => createBlockStyle(editorState, "unordered-list-item")} />
                         <FormatBoldIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  ${newEditorState.getCurrentInlineStyle().has("BOLD") ? props.colorhover ? props.colorhover : "bg-lv-11 text-white" : ""}`} onClick={() => createInlineStyle(editorState, "BOLD")} />
                         <FormatItalicIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  ${newEditorState.getCurrentInlineStyle().has("ITALIC") ? props.colorhover ? props.colorhover : "bg-lv-11 text-white" : ""}`} onClick={() => createInlineStyle(editorState, "ITALIC")} />
@@ -194,6 +237,7 @@ export const TextAreaTool = (props: Props) => {
                         <AddLinkIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  ${entity && entity.getType() === "LINK" ? "bg-main" : ""}`} onClick={() => { setIsInputLink(!isInputLink) }} />
                         <LinkOffIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  `} onClick={() => removeLink()} />
                         <AddPhotoAlternateIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer  `} onClick={() => setIsInputLinkImg(true)} />
+                        <InsertPhotoIcon className={`!w-12 !h-12 p-3 rounded cursor-pointer`} onClick={() => { store.dispatch(setModal({ open: true, value: 0 })); set_isSelectFromTextArea(true) }} />
                     </div>
                     <div className={`flex transition-all duration-200 absolute shadow-md rounded cursor-pointer p-1 bg-lv-0 dark:bg-lv-18 ${isInputLink || isInputLinkImg ? "top-14 z-[1]" : "top-0 z-[-1] opacity-0"}`}>
                         <input
@@ -209,7 +253,7 @@ export const TextAreaTool = (props: Props) => {
                     </div>
                 </div>
             </div>
-            <div className={` overflow-auto scroll_none pt-5 dangerous_box h-full-12`}>
+            <div className={` pt-5 px-2 dangerous_box`}>
                 <Editor editorState={editorState} onChange={(editorState) => setEditorState(editorState)} />
             </div>
         </div >

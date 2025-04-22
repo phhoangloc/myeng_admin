@@ -9,6 +9,7 @@
     --container-2xl: 1600px;
 
     --vw-12: calc(100vw - 3rem);
+    --per-12: calc(100% - 3rem);
     --vw-40: calc(100vw - 10rem);
     --vw-72: calc(100vw - 18rem);
 

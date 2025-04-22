@@ -1,7 +1,7 @@
 "use client"
 import React, { useRef } from 'react'
 type Props = {
-    onClick: (e: unknown) => void,
+    onClick: (e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
     name: React.ReactNode,
     disable?: boolean,
     sx?: string,
@@ -21,9 +21,9 @@ export const Button = ({ onClick, name, disable, sx }: Props) => {
 export const UploadButton = ({ name, onClick, sx }: Props) => {
     const IconRef = useRef<HTMLInputElement | null>(null)
     return (
-        <div className={`${sx} `}>
+        <div>
             <input ref={IconRef} type="file" style={{ display: "none" }} onChange={(e) => onClick && onClick(e)} multiple={true} />
-            <div className=" h-max w-max p-3 flex flex-col justify-center text-center bg-lv-11 text-white rounded cursor-pointer" onClick={() => IconRef.current && IconRef.current.click()}>{name}</div>
+            <div className={`${sx} `} onClick={() => IconRef.current && IconRef.current.click()}>{name}</div>
         </div>
     )
 }

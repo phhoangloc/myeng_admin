@@ -16,6 +16,8 @@ import { ApiItem } from '@/api/client'
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import moment from 'moment'
+import Switch from '@/tool/button/switch'
+import { ModalType, setModal } from '@/redux/reducer/ModalReduce'
 
 type Props = {
     archive: string,
@@ -23,6 +25,7 @@ type Props = {
 }
 type questionTypeBody = {
     archive: string;
+    audioId?: number;
     question?: string;
     choose?: string;
     answer?: string;
@@ -147,6 +150,7 @@ export const DetailBlog = () => {
 
     // const [_isEdit, set_isEdit] = useState<boolean>(false)
     const [_content, set_content] = useState<string>("")
+    const [_cencor, set_cencor] = useState<boolean>(false)
 
     const toPage = useRouter()
     const createBlog = async (position: string, archive: string, body: { content: string, slug: string }) => {
@@ -155,7 +159,7 @@ export const DetailBlog = () => {
             set_refresh(n => n + 1)
         }
     }
-    const updateBlog = async (position: string, archive: string, body: { content: string }, id: number) => {
+    const updateBlog = async (position: string, archive: string, body: { content: string, censor: boolean }, id: number) => {
         const result = await ApiUpdateItem({ position, archive, id }, body)
         if (result.success) {
             set_refresh(n => n + 1)
@@ -170,7 +174,6 @@ export const DetailBlog = () => {
     return (
         _blog ?
             <div className='flex flex-col gap-1'>
-
                 <div className='bg-white shadow rounded'>
                     <div className='h-12 flex justify-between  border-b border-slate-200 font-bold px-2'>
                         <div className='flex flex-col justify-center'>
@@ -178,15 +181,20 @@ export const DetailBlog = () => {
                         </div>
                         <div className='flex'>
                             {_currentUser.id === _blog?.hostId || _currentUser.position === "admin" ?
-                                <SaveIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => updateBlog(_currentUser.position, _blog.archive, { content: _content }, _blog.id)} /> :
+                                <SaveIcon className='cursor-pointer !w-8 !h-8 p-1  m-auto' onClick={() => updateBlog(_currentUser.position, _blog.archive, { content: _content, censor: _cencor }, _blog.id)} /> :
                                 null}
-                            <DeleteIcon className='!w-8 !h-8 p-1  m-auto' onClick={() => deleteBlog(_currentUser.position, _blog.archive, _blog.id)} />
+                            <DeleteIcon className='cursor-pointer !w-8 !h-8 p-1  m-auto' onClick={() => deleteBlog(_currentUser.position, _blog.archive, _blog.id)} />
                         </div>
                     </div>
                     <TextAreaTool onChange={(v) => set_content(v)} value={_blog ? _blog.content : ""} sx='min-h-96 border-none' />
                     <div className="h-12"></div>
                 </div>
-                <div className='bg-white shadow rounded px-2 '>
+                {_currentUser.position === "admin" ?
+                    <div className=' rounded px-2 flex justify-between max-w-xs '>
+                        <div className='h-12 flex flex-col justify-center'> censor</div>
+                        <Switch value={_blog.censor} func={(v) => set_cencor(v)} />
+                    </div> : null}
+                <div className='  rounded px-2 '>
                     <div className='h-12 flex flex-col justify-center'>
                         comment
                     </div>
@@ -209,7 +217,7 @@ export const DetailBlog = () => {
                         <TextAreaTool onChange={(v) => set_content(v)} value={""} sx='min-h-96 border-none' />
                         <div className="h-12"></div>
                     </div>
-                    <div className='bg-white shadow rounded px-2 '>
+                    <div className='  rounded px-2 '>
                         <div className='h-12 flex flex-col justify-center'>
                             comment
                         </div>
@@ -221,8 +229,10 @@ export const DetailBlog = () => {
 export const Detail = ({ archive, slug }: Props) => {
 
     const [_currentUser, set_currentUser] = useState<UserType>(store.getState().user)
+    const [_currentModal, set_currentModal] = useState<ModalType>(store.getState().modal)
     const update = () => {
         store.subscribe(() => set_currentUser(store.getState().user))
+        store.subscribe(() => set_currentModal(store.getState().modal))
     }
     useEffect(() => {
         update()
@@ -230,6 +240,8 @@ export const Detail = ({ archive, slug }: Props) => {
 
     const [_loading, set_loading] = useState<boolean>(true)
     const [_id, set_id] = useState<number>(0)
+    const [_audioId, set_AudioId] = useState<number>(0)
+    const [_audioPreview, set_AudioPreview] = useState<string>("")
     const [_question, set_question] = useState<string>("")
     const [__question, set__question] = useState<string>("")
     const [_choose, set_choose] = useState<string>("")
@@ -261,10 +273,10 @@ export const Detail = ({ archive, slug }: Props) => {
     const getItem = async (position: string, archive: string, id: string) => {
         set_loading(true)
         const result = await ApiItemUser({ position, archive: "path", archivePlus: archive, id: Number(id) })
-
         if (result.success && result.data[0]) {
             set_loading(false)
             set_id(result.data[0].id)
+            set_AudioId(result.data[0].audioId)
             set_question(result.data[0].question)
             set_chooseArr(JSON.parse(result.data[0].choose))
             set_explain(result.data[0].explain)
@@ -283,6 +295,7 @@ export const Detail = ({ archive, slug }: Props) => {
 
     const body: questionTypeBody = {
         archive: archive,
+        audioId: _audioId,
         question: __question,
         choose: _choose,
         explain: __explain
@@ -339,6 +352,30 @@ export const Detail = ({ archive, slug }: Props) => {
             set_chooseIndex(_chooseArr.length - 1)
         }
     }, [_chooseArr.length])
+
+    const [_isSelectFromButton, set_isSelectFromButton] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (_isSelectFromButton && _currentModal.open === false && _currentModal.value) {
+            set_AudioId(_currentModal.value)
+            store.dispatch(setModal({ open: false, value: 0 }))
+            set_isSelectFromButton(false)
+        }
+    }, [_currentModal.open, _currentModal.value, _isSelectFromButton])
+
+
+    useEffect(() => {
+        const getAudioFile = async (id: number) => {
+            const result = await ApiItemUser({ position: _currentUser.position, archive: "file", id })
+            if (result.success) {
+                set_AudioPreview(result.data[0].name)
+            }
+        }
+        if (_audioId) {
+            getAudioFile(_audioId)
+        }
+    }, [_audioId, _currentUser.position])
+
     return (
         _loading ?
             < div className="h-11  bg-white px-2 shadow-md rounded flex flex-col justify-center gap-1 text-center " >
@@ -353,13 +390,23 @@ export const Detail = ({ archive, slug }: Props) => {
                 </div>
                 < div className="min-h-full  bg-white px-2 shadow-md rounded  flex flex-col gap-1 " >
                     <div className="h-11 flex flex-col justify-end font-bold">Reading</div>
-                    <TextAreaTool onChange={(v) => set__question(v)} value={_question} sx='h-96 w-full' />
+                    <TextAreaTool onChange={(v) => set__question(v)} value={_question} sx='h-96 w-full overflow-auto' />
+
+                    {
+                        archive === "pathone" || archive === "pathtwo" || archive === "paththree" || archive === "pathfour" ?
+                            <>
+                                <div className="h-11 flex flex-col justify-end font-bold">Audio</div>
+                                <Button name="select audio" onClick={() => { store.dispatch(setModal({ open: true, value: 0 })); set_isSelectFromButton(true) }} sx='bg-slate-200 !text-black cursor-pointer' />
+                            </> : null
+                    }
+                    {_audioPreview ? <audio className='w-full' src={process.env.ftp_url + _audioPreview} controls /> : null}
                     <div className="h-11 flex flex-col justify-end font-bold">Q&A</div>
                     <div className="flex">
                         <DividerSelect data={_chooseArr} name={"question"} valueReturn={(v) => set_chooseIndex(v.id)} key={_chooseArr.length} />
                         <Add className='!h-12 !w-12 p-3' onClick={() => { makeQuestion(_chooseArr[_chooseArr.length - 1] ? _chooseArr[_chooseArr.length - 1].id + 1 : 0) }} />
                         {_chooseIndex !== -1 ? <RemoveIcon className='!h-12 !w-12 p-3' onClick={() => deleteQuestion(_chooseIndex)} /> : null}
                     </div>
+
                     {
                         _chooseIndex !== -1 ?
                             < div >
@@ -374,7 +421,7 @@ export const Detail = ({ archive, slug }: Props) => {
                     }
                     <div className="h-11 flex flex-col justify-end font-bold">Explain</div>
 
-                    <TextAreaTool onChange={(v) => set__explain(v)} value={_explain} sx='h-96' />
+                    <TextAreaTool onChange={(v) => set__explain(v)} value={_explain} sx='h-96 overflow-auto' />
 
                     <Button name={_id && _id !== -1 ? "save" : "create"} sx='bg-slate-200 !text-black' onClick={() => _id && _id !== -1 ? upload(_currentUser.position, "path", _id, body) : create(_currentUser.position, "path", body)}></Button>
                 </div >

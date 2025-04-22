@@ -41,8 +41,8 @@ export const Input = ({ onChange, name, value, type, disabled, warn, icon1, icon
             <div className='w-max absolute flex right-1 bottom-0 h-12 z-[1]'>
                 {icon1}{icon2}
             </div>
-            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 border-lv-2 dark:border-lv-17`}></div>
-            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 transition-all duration-300 border-lv-11 ${_focus || value ? "scale-x-[100%]" : "scale-x-[0%]"}`}></div>
+            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 border-slate-200`}></div>
+            <div className={`w-full h-full absolute z-0 border-b-2 top-0 left-0 transition-all duration-300 border-slate-200 ${_focus || value ? "scale-x-[100%]" : "scale-x-[0%]"}`}></div>
         </div>
     )
 }

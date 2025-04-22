@@ -7,7 +7,7 @@ export type BodyTypeWithPosition = {
     archivePlus?: string,
     id?: number,
     slug?: string,
-    hostId?: string,
+    hostId?: number,
     search?: string,
     skip?: number,
     limit?: number,

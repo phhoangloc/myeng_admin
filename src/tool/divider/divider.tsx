@@ -32,11 +32,10 @@ export const DividerSelect = ({ data, name, sx, valueReturn }: Props) => {
         }
     }, [_id, _name, valueReturn])
     return (
-        <div className={`relative ${sx}`}>
-            <Divider sx={`border-2 ${_id || _name ? "!border-lv-11" : "border-lv-2 dark:border-lv-17"}`} name={<div className='flex justify-between'><p className='flex flex-col justify-center'>{_name || name}</p> <KeyboardArrowDownIcon className='!w-9 !h-9 p-1' /></div>} onClick={() => { setDrop(!drop) }} />
-            <div className={`transition-all duration-100 overflow-hidden absolute z-10 top-12 w-full shadow-lg border-lv-2 dark:border-lv-17 ${drop ? "border" : ""}  rounded bg-white `} style={{ height: drop && data?.length ? (data.length + 1) * 3 + "rem" : 0 }} >
-                <Divider name="---" onClick={() => { set_name(""); set_id(-1); setDrop(!drop) }} />
-                {data?.length ? data.map((d: DividerType, index: number) =>
+        <div className={`relative h-full  ${sx}`}>
+            <Divider name={<div className='flex justify-between'><div className='flex flex-col justify-center'>{valueReturn && _name || name}</div> <KeyboardArrowDownIcon className='!w-9 !h-9 p-1' /></div>} onClick={() => { setDrop(!drop) }} />
+            <div className={` absolute z-10 top-12 w-full h-full overflow-hidden ${drop ? "shadow border border-slate-200" : "shadow-none border-none"}  rounded bg-white `} style={{ height: drop && data?.length ? (data.length) * 3 + "rem" : 0 }} >
+                {data?.length && drop ? data.map((d: DividerType, index: number) =>
                     <Divider key={index} name={d.name} onClick={() => { set_name(d.name); set_id(index); setDrop(!drop); if (d.func) { d.func() } }} />
                 ) : null}
             </div >

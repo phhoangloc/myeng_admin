@@ -1,22 +1,35 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';
 import AbcIcon from '@mui/icons-material/Abc';
+import { UserType } from '@/redux/reducer/UserReduce';
+import store from '@/redux/store';
+import FolderIcon from '@mui/icons-material/Folder';
 const Sidebar = () => {
 
+    const [_currentUser, set_currentUser] = useState<UserType>(store.getState().user)
 
+    const update = () => {
+        store.subscribe(() => set_currentUser(store.getState().user))
+
+    }
+    useEffect(() => {
+        update()
+    }, [])
     const listMenu = [
         {
             icon: <HomeIcon className='!w-12 !h-12 p-2' />,
             name: "Home",
             link: "/",
+            position: "user",
         },
         {
             icon: <div className='!w-12 !h-12 p-2 flex flex-col justify-center text-center font-bold text-xl'>B</div>,
             name: "Blog",
             link: "/blog",
+            position: "user",
         },
         {
             icon: <AbcIcon className='!w-12 !h-12 p-2' />,
@@ -58,13 +71,18 @@ const Sidebar = () => {
             name: "Path 7",
             link: "/pathseven",
         },
+        {
+            icon: <FolderIcon className='!w-12 !h-12 p-2' />,
+            name: "Media",
+            link: "/file",
+        },
     ]
 
     const toPage = useRouter()
     return (
         <div className='h-full'>
             {listMenu.map((menu, index) =>
-                <div key={index} className='h-12 flex flex-col justify-center overflow-hidden cursor-pointer' onClick={() => { toPage.push(menu.link) }}>
+                <div key={index} className={`h-12 flex flex-col justify-center overflow-hidden cursor-pointer ${_currentUser.position === "admin" || _currentUser.position === menu.position ? "block" : "hidden"}`} onClick={() => { toPage.push(menu.link) }}>
                     <div className="flex">
                         <div>
                             {menu.icon}

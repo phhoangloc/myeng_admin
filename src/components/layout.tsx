@@ -34,7 +34,10 @@ const Layout = ({ children }: Props) => {
 
                     <div className='w-(--vw-12) lg:w-(--vw-40) px-2'>
                         <Header />
-                        {children}
+                        <div className='w-full max-w-lg m-auto'>
+
+                            {children}
+                        </div>
                     </div>
                 </div>
             </div> :
